@@ -5,5 +5,5 @@ namespace ms_evva_core.Repos.Interfaces;
 
 public interface ITokenRepository : IRepository<Models.Token>
 {
-    // Adicionar métodos adicionais aqui
+    Task<Token> GetByHash(string hash);
 } 

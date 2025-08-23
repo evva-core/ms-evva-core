@@ -16,4 +16,4 @@ public class ProjectController : GenericController<Project>
     {
         _projectService = projectService;
     }
-} 
+}  

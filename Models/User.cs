@@ -7,7 +7,7 @@ namespace ms_evva_core.Models
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public bool IsAdmin { get; set; } = false;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsActive { get; set; } = true;
     }
 } 

@@ -8,4 +8,6 @@
 /appsettings.Testing.json
 /appsettings.Development.json
 /appsettings.Production.json
-/.dev
+.dev
+.config
+.dotnet

@@ -16,4 +16,15 @@ public class HostController : GenericController<Models.Host>
         _hostService = hostService;
     }
 
+        [HttpGet("uniqueId/{uniqueId}")]
+    public async Task<ActionResult<ApiResponse<Models.Host>>> GetByUniqueId(string uniqueId)
+    {
+        var host = await _hostService.GetHostByUniqueIdAsync(uniqueId);
+        if (host == null)
+        {
+            return NotFound();
+        }
+        var response = new ApiResponse<Models.Host> { Data = host };
+        return Ok(response);
+    }
 }
