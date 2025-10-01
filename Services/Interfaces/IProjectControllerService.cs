@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Mvc;
 using ms_evva_core.Models;
+using System.Threading.Tasks;
 
 namespace ms_evva_core.Services.Interfaces;
 
 public interface IProjectControllerService : IControllerService<Project>
 {
-    // Adicionar métodos específicos do Project aqui
-} 
+    Task<IActionResult> GetAllProjectsWithDetailsAsync();
+    Task<IActionResult> GetProjectWithDetailsAsync(int id);
+}

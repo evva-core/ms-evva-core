@@ -4,13 +4,29 @@ using ms_evva_core.Services.Interfaces;
 using ms_evva_core.Services.Classes;
 using ms_evva_core.Utils;
 using ms_evva_core.Hubs;
-
+using ms_evva_core.Base.Configuration;
+using Npgsql;
+using ms_evva_core.Models.Enums;
+using OperatingSystem = ms_evva_core.Models.Enums.OperatingSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 ConfigurationHelper.Initialize(builder.Configuration);
+
+var connectionString = ConfigurationHelper.Configuration.GetConnectionString("evva-core");
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<ProjectStatus>();
+dataSourceBuilder.MapEnum<DeploymentStatus>();
+dataSourceBuilder.MapEnum<OperatingSystem>();
+dataSourceBuilder.MapEnum<RepositoryStatus>();
+dataSourceBuilder.MapEnum<ServiceStatus>();
+dataSourceBuilder.MapEnum<SupportedOs>();
+var dataSource = dataSourceBuilder.Build();
+builder.Services.AddSingleton<NpgsqlDataSource>(dataSource);
+builder.Services.AddScoped<ConnectionProvider>();
+
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

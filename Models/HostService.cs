@@ -1,14 +1,23 @@
+using ms_evva_core.Base.Attributes;
+using ms_evva_core.Models.Enums;
+using System;
+
 namespace ms_evva_core.Models
 {
     public class HostService
     {
         public int Id { get; set; }
+        [Column("host_id")]
         public int HostId { get; set; }
-        public string Service_name { get; set; }
+        [Column("service_name")]
+        public string ServiceName { get; set; }
         public int? Port { get; set; }
-        public string Status { get; set; }
-        public DateTime? Last_check { get; set; }
+        [Column("status")]
+        public ServiceStatus Status { get; set; }
+        [Column("last_check")]
+        public DateTime? LastCheck { get; set; }
         public string Path { get; set; }
-        public string Workdir { get; set; }
+        [Column("work_dir")]
+        public string WorkDir { get; set; }
     }
 }

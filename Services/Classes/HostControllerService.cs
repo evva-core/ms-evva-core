@@ -31,7 +31,7 @@ public class HostControllerService : GenericControllerService<Models.Host>, IHos
         try
         {
             Token token = await _tokenRepository.GetByHash(hash);
-            if (token.ExpiresIn < DateTime.Now)
+            if (token.ExpiresAt < DateTime.Now)
             {
                 token.IsActive = false;
                 await _tokenRepository.UpdateAsync(token);
