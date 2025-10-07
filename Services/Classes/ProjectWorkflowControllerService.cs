@@ -7,7 +7,15 @@ namespace ms_evva_core.Services.Classes;
 
 public class ProjectWorkflowControllerService : GenericControllerService<ProjectWorkflow>, IProjectWorkflowControllerService
 {
+    private readonly IProjectWorkflowRepository _projectWorkflowRepository;
+
     public ProjectWorkflowControllerService(IProjectWorkflowRepository repository) : base(repository)
     {
+        _projectWorkflowRepository = repository;
+    }
+
+    public async Task<IEnumerable<ProjectWorkflow>> GetByProjectIdAsync(int projectId)
+    {
+        return await _projectWorkflowRepository.GetByProjectIdAsync(projectId);
     }
 } 

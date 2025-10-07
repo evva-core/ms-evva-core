@@ -13,5 +13,6 @@ namespace ms_evva_core.Models
         public int ExecutionOrder { get; set; }
         [Column("stage_name")]
         public string? StageName { get; set; }
+        public Workflow? Workflow { get; set; }
     }
 }

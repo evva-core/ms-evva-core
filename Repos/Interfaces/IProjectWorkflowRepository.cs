@@ -5,5 +5,5 @@ namespace ms_evva_core.Repos.Interfaces;
 
 public interface IProjectWorkflowRepository : IRepository<Models.ProjectWorkflow>
 {
-    // Adicionar métodos adicionais aqui
+    Task<IEnumerable<ProjectWorkflow>> GetByProjectIdAsync(int projectId);
 } 
