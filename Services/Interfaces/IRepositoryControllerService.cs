@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using ms_evva_core.Models;
 using ms_evva_core.Services.Interfaces;
 
@@ -5,5 +6,6 @@ namespace ms_evva_core.Services.Interfaces
 {
     public interface IRepositoryControllerService : IControllerService<Repository>
     {
+        Task<IActionResult> CloneRepository(int id);
     }
 }

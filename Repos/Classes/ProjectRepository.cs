@@ -18,7 +18,7 @@ public class ProjectRepository : GenericRepository<Project>, IProjectRepository
 
     public async Task<IEnumerable<ProjectDto>> GetAllProjectsWithDetailsAsync()
     {
-        var conn = await _connectionProvider.CreateConnectionAsync();
+        using var conn = await _connectionProvider.CreateConnectionAsync();
         string sql = $@"SELECT 
     proj.id AS Id,
     proj.name AS Name,
@@ -44,7 +44,7 @@ GROUP BY
 
     public async Task<ProjectDetailsDto> GetProjectWithDetailsAsync(int id)
     {
-        var conn = await _connectionProvider.CreateConnectionAsync();
+        using var conn = await _connectionProvider.CreateConnectionAsync();
         
         string projectSql = @"SELECT 
             proj.id AS Id,
@@ -83,6 +83,49 @@ GROUP BY
             project.Repositories = (await conn.QueryAsync<Repository>(repositoriesSql, new { Id = id })).ToList();
         }
         
-        return project;
+        return project!;
+    }
+
+    public async Task<IEnumerable<ProjectWorkflow>> GetProjectWorkflowsAsync(int projectId)
+    {
+        using var conn = await _connectionProvider.CreateConnectionAsync();
+        
+        string sql = @"SELECT 
+            pw.id AS Id,
+            pw.workflow_id AS WorkflowId,
+            pw.execution_order AS ExecutionOrder,
+            pw.stage_name AS StageName,
+            w.id AS Id,
+            w.name AS Name,
+            w.description AS Description,
+            w.command AS Command,
+            w.supported_os AS SupportedOs,
+            w.parameters AS Parameters,
+            w.is_json_required AS IsJsonRequired,
+            w.json_data AS JsonData
+        FROM project_workflow pw
+        INNER JOIN workflows w ON pw.workflow_id = w.id
+        WHERE pw.project_id = @ProjectId
+        ORDER BY pw.execution_order";
+        
+        var workflowDict = new Dictionary<int, ProjectWorkflow>();
+        
+        await conn.QueryAsync<ProjectWorkflow, Workflow, ProjectWorkflow>(
+            sql,
+            (projectWorkflow, workflow) =>
+            {
+                if (!workflowDict.TryGetValue(projectWorkflow.Id, out var existingWorkflow))
+                {
+                    projectWorkflow.Workflow = workflow;
+                    workflowDict.Add(projectWorkflow.Id, projectWorkflow);
+                    return projectWorkflow;
+                }
+                return existingWorkflow;
+            },
+            new { ProjectId = projectId },
+            splitOn: "Id"
+        );
+        
+        return workflowDict.Values;
     }
 }

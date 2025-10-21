@@ -5,5 +5,6 @@ namespace ms_evva_core.Repos.Interfaces
 {
     public interface IRepositoryRepository : IRepository<Repository>
     {
+        Task<IEnumerable<Repository>> GetByProjectIdAsync(int projectId);
     }
 }

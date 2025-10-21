@@ -94,5 +94,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<HostHub>("/hostHub");
+app.MapHub<ProjectHub>("/projectHub");
 
 app.Run();

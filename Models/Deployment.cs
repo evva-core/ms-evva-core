@@ -20,6 +20,6 @@ namespace ms_evva_core.Models
         [Column("triggered_by")]
         public int TriggeredBy { get; set; }
         [Column("error_message")]
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }

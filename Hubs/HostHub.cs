@@ -6,6 +6,12 @@ namespace ms_evva_core.Hubs
 {
     public class HostHub : Hub
     {
+        private readonly IHubContext<ProjectHub> _projectHub;
+
+        public HostHub(IHubContext<ProjectHub> projectHub)
+        {
+            _projectHub = projectHub;
+        }
         public async Task JoinHostGroup(string uniqueId)
         {
             Console.WriteLine($"[HostHub] JoinHostGroup invoked for uniqueId: {uniqueId} by ConnectionId: {Context.ConnectionId}");
@@ -26,18 +32,61 @@ namespace ms_evva_core.Hubs
             try
             {
                 var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                base.Clients.Group(uniqueId).SendAsync("ReceiveHostData", data);
-           
-
+                
+                // Repassa dados para frontend
+                if (data is System.Text.Json.JsonElement element && element.TryGetProperty("type", out var typeProperty))
+                {
+                    var type = typeProperty.GetString();
+                    
+                    // Repository events
+                    if (type?.StartsWith("repository_") == true && element.TryGetProperty("repositoryId", out var repoIdProperty))
+                    {
+                        var repositoryId = repoIdProperty.GetInt32();
+                        var projectId = 1; // placeholder
+                        
+                        if (type == "repository_clone_completed")
+                            await _projectHub.Clients.Group($"project-{projectId}").SendAsync("RepositoryCloneCompleted", new { repositoryId });
+                        else if (type == "repository_clone_failed")
+                            await _projectHub.Clients.Group($"project-{projectId}").SendAsync("RepositoryCloneFailed", new { repositoryId });
+                    }
+                    
+                    // Deployment events
+                    else if (type?.StartsWith("deployment_") == true && element.TryGetProperty("projectId", out var projIdProperty))
+                    {
+                        var projectId = projIdProperty.GetInt32();
+                        
+                        if (type == "deployment_progress")
+                        {
+                            var stage = element.GetProperty("stage").GetString();
+                            var message = element.GetProperty("message").GetString();
+                            var isError = element.TryGetProperty("isError", out var errorProp) && errorProp.GetBoolean();
+                            await _projectHub.Clients.Group($"project-{projectId}").SendAsync("DeploymentProgress", new { projectId, stage, message, isError, timestamp = DateTime.UtcNow });
+                        }
+                        else if (type == "deployment_completed")
+                        {
+                            var success = element.GetProperty("success").GetBoolean();
+                            var message = element.GetProperty("message").GetString();
+                            await _projectHub.Clients.Group($"project-{projectId}").SendAsync("DeploymentCompleted", new { projectId, success, message, timestamp = DateTime.UtcNow });
+                        }
+                    }
+                }
+                
+                await Clients.Group(uniqueId).SendAsync("ReceiveHostData", data);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error serializing data from host {uniqueId}: {ex.Message}");
+                Console.WriteLine($"Error processing data from host {uniqueId}: {ex.Message}");
             }
-            await Clients.Group(uniqueId).SendAsync("ReceiveHostData", data);
         }
 
-        public override async Task OnDisconnectedAsync(Exception exception)
+        public async Task CloneRepository(int repositoryId, string url, string branch, string targetPath)
+        {
+            Console.WriteLine($"[HostHub] CloneRepository invoked for repo {repositoryId}");
+            // Este método será chamado pelos agents conectados
+            await Clients.Caller.SendAsync("ExecuteClone", new { repositoryId, url, branch, targetPath });
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
             Console.WriteLine($"[HostHub] OnDisconnectedAsync invoked for ConnectionId: {Context.ConnectionId}");
             // You might need to handle group cleanup if a client disconnects unexpectedly.

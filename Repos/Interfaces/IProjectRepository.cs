@@ -10,4 +10,5 @@ public interface IProjectRepository : IRepository<Models.Project>
 {
     Task<IEnumerable<ProjectDto>> GetAllProjectsWithDetailsAsync();
     Task<ProjectDetailsDto> GetProjectWithDetailsAsync(int id);
+    Task<IEnumerable<ProjectWorkflow>> GetProjectWorkflowsAsync(int projectId);
 }

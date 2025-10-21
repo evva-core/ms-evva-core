@@ -14,5 +14,7 @@ namespace ms_evva_core.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         [Column("is_active")]
         public bool IsActive { get; set; } = true;
+        [Column("password_hash")]
+        public string PasswordHash { get; set; } = string.Empty;
     }
 }

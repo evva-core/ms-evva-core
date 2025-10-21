@@ -16,4 +16,10 @@ public class WorkflowController : GenericController<Workflow>
     {
         _workflowService = workflowService;
     }
+
+    [HttpGet("test")]
+    public IActionResult Test()
+    {
+        return Ok(new { message = "Workflow controller is working", timestamp = DateTime.UtcNow });
+    }
 } 

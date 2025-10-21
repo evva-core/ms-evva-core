@@ -11,7 +11,7 @@ public class TokenControllerService : GenericControllerService<Token>, ITokenCon
 
     public TokenControllerService(ITokenRepository repository) : base(repository)
     {
-        
+        _tokenRepository = repository;
     }
 
     public async Task<Token> GetByHash(string hash)
@@ -20,9 +20,9 @@ public class TokenControllerService : GenericControllerService<Token>, ITokenCon
         {
             return await _tokenRepository.GetByHash(hash);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            throw ex;
+            throw;
         }
     }
 } 
