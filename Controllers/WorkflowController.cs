@@ -17,9 +17,10 @@ public class WorkflowController : GenericController<Workflow>
         _workflowService = workflowService;
     }
 
-    [HttpGet("test")]
-    public IActionResult Test()
+    [HttpGet("available")]
+    public async Task<IActionResult> GetAvailableWorkflows()
     {
-        return Ok(new { message = "Workflow controller is working", timestamp = DateTime.UtcNow });
+        var response = await _workflowService.GetAvailableWorkflowsAsync();
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 } 

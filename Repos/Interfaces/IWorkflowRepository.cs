@@ -5,5 +5,5 @@ namespace ms_evva_core.Repos.Interfaces;
 
 public interface IWorkflowRepository : IRepository<Models.Workflow>
 {
-    // Adicionar métodos adicionais aqui
+    Task<IEnumerable<Workflow>> GetAvailableWorkflowsAsync();
 } 

@@ -76,6 +76,9 @@ builder.Services.AddScoped<IHostMetricControllerService, HostMetricControllerSer
 builder.Services.AddScoped<IAuditLogControllerService, AuditLogControllerService>();
 builder.Services.AddScoped<IDeploymentControllerService, DeploymentControllerService>();
 
+// Active Host Service
+builder.Services.AddSingleton<IActiveHostService, ActiveHostService>();
+
 
 var app = builder.Build();
 

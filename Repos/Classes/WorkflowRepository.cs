@@ -57,4 +57,17 @@ public class WorkflowRepository : GenericRepository<Workflow>, IWorkflowReposito
         var rowsAffected = await connection.ExecuteAsync(sql, parameters);
         return rowsAffected > 0;
     }
+
+    public async Task<IEnumerable<Workflow>> GetAvailableWorkflowsAsync()
+    {
+        var sql = @"
+            SELECT w.* FROM workflows w
+            WHERE w.id NOT IN (
+                SELECT DISTINCT workflow_id FROM project_workflow
+            )
+            ORDER BY w.name";
+
+        using var connection = new ConnectionProvider().CreateConnection();
+        return await connection.QueryAsync<Workflow>(sql);
+    }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using ms_evva_core.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 
@@ -7,10 +8,12 @@ namespace ms_evva_core.Hubs
     public class HostHub : Hub
     {
         private readonly IHubContext<ProjectHub> _projectHub;
+        private readonly IActiveHostService _activeHostService;
 
-        public HostHub(IHubContext<ProjectHub> projectHub)
+        public HostHub(IHubContext<ProjectHub> projectHub, IActiveHostService activeHostService)
         {
             _projectHub = projectHub;
+            _activeHostService = activeHostService;
         }
         public async Task JoinHostGroup(string uniqueId)
         {
@@ -29,6 +32,10 @@ namespace ms_evva_core.Hubs
         public async Task SendHostData(string uniqueId, object data)
         {
             Console.WriteLine($"[HostHub] SendHostData invoked for uniqueId: {uniqueId}");
+            
+            // Update active host list
+            _activeHostService.UpdateHostActivity(uniqueId, data);
+            
             try
             {
                 var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
