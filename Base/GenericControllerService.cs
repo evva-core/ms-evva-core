@@ -20,11 +20,7 @@ public abstract class GenericControllerService<T> : ControllerBase,IControllerSe
         try
         {
             var result = await Repository.GetAllAsync();
-            return Ok(new Models.ApiResponse<IEnumerable<T>>
-            {
-                Data = result,
-                Success = true
-            });
+            return Ok(result);
         }
         catch (Exception ex)
         {
@@ -39,17 +35,9 @@ public abstract class GenericControllerService<T> : ControllerBase,IControllerSe
             var result = await Repository.GetByIdAsync(id);
             if (result != null)
             {
-                return Ok(new Models.ApiResponse<T>
-                {
-                    Data = result,
-                    Success = true
-                });
+                return Ok(result);
             }
-            return NotFound(new Models.ApiResponse<T>
-            {
-                Success = false,
-                Message = "Entity not found"
-            });
+            return NotFound();
         }
         catch (Exception ex)
         {

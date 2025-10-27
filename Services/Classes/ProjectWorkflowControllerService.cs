@@ -4,6 +4,8 @@ using ms_evva_core.Repos.Interfaces;
 using ms_evva_core.Services.Interfaces;
 using ms_evva_core.Controllers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
+using ms_evva_core.Utils;
 
 namespace ms_evva_core.Services.Classes;
 
@@ -11,6 +13,7 @@ public class ProjectWorkflowControllerService : GenericControllerService<Project
 {
     private readonly IProjectWorkflowRepository _projectWorkflowRepository;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ErrorHandler _errorHandler = new();
 
     public ProjectWorkflowControllerService(IProjectWorkflowRepository repository, IServiceProvider serviceProvider) : base(repository)
     {
@@ -18,9 +21,15 @@ public class ProjectWorkflowControllerService : GenericControllerService<Project
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<IEnumerable<ProjectWorkflow>> GetByProjectIdAsync(int projectId)
+    public async Task<IActionResult> GetByProjectIdAsync(int projectId)
     {
-        return await _projectWorkflowRepository.GetByProjectIdAsync(projectId);
+        try{
+            return Ok(await _projectWorkflowRepository.GetByProjectIdAsync(projectId));
+        }
+        catch (Exception ex)
+        {
+            return _errorHandler.InvokeError(ex);
+        }
     }
 
     public async Task SaveProjectWorkflowsAsync(int projectId, IEnumerable<ProjectWorkflowController.ProjectWorkflowDto> workflows)

@@ -16,6 +16,7 @@ public class DashboardController : ControllerBase
     private readonly IProjectRepository _projectRepository;
     private readonly IHostMetricRepository _hostMetricRepository;
     private readonly IHostRepository _hostRepository;
+    private readonly Utils.ErrorHandler _errorHandler = new();
 
     public DashboardController(
         IActiveHostService activeHostService,
@@ -73,19 +74,11 @@ public class DashboardController : ControllerBase
                 }
             };
 
-            return Ok(new ApiResponse<DashboardStatsDto>
-            {
-                Success = true,
-                Data = stats
-            });
+            return Ok(stats);
         }
         catch (Exception ex)
         {
-            return BadRequest(new ApiResponse<object>
-            {
-                Success = false,
-                Message = ex.Message
-            });
+            return _errorHandler.InvokeError(ex);
         }
     }
 
@@ -133,11 +126,7 @@ public class DashboardController : ControllerBase
                 .Take(5)
                 .ToList();
 
-            return Ok(new ApiResponse<List<RecentActivityDto>>
-            {
-                Success = true,
-                Data = sortedActivities
-            });
+            return Ok(sortedActivities);
         }
         catch (Exception ex)
         {
@@ -159,8 +148,8 @@ public class DashboardController : ControllerBase
 
             if (statsResponse is OkObjectResult statsOk && activitiesResponse is OkObjectResult activitiesOk)
             {
-                var statsData = ((ApiResponse<DashboardStatsDto>)statsOk.Value!).Data!;
-                var activitiesData = ((ApiResponse<List<RecentActivityDto>>)activitiesOk.Value!).Data!;
+                var statsData = ((DashboardStatsDto)statsOk.Value!)!;
+                var activitiesData = ((List<RecentActivityDto>)activitiesOk.Value!)!;
 
                 var dashboardData = new DashboardDataDto
                 {
@@ -168,11 +157,7 @@ public class DashboardController : ControllerBase
                     RecentActivities = activitiesData
                 };
 
-                return Ok(new ApiResponse<DashboardDataDto>
-                {
-                    Success = true,
-                    Data = dashboardData
-                });
+                return Ok(dashboardData);
             }
 
             return BadRequest(new ApiResponse<object>

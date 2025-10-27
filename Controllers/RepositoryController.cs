@@ -27,9 +27,6 @@ namespace ms_evva_core.Controllers
         }
 
         [HttpPost("{id}/clone")]
-        public async Task<IActionResult> CloneRepository(int id)
-        {
-            return await _repositoryService.CloneRepository(id);
-        }
+        public async Task<IActionResult> CloneRepository(int id) => await _repositoryService.CloneRepository(id);
     }
 }

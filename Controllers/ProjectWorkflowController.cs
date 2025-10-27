@@ -18,15 +18,9 @@ public class ProjectWorkflowController : GenericController<ProjectWorkflow>
     }
 
     [HttpGet("project/{projectId}")]
-    public async Task<IActionResult> GetByProjectId(int projectId)
-    {
-        var workflows = await _projectWorkflowService.GetByProjectIdAsync(projectId);
-        return Ok(new ApiResponse<IEnumerable<ProjectWorkflow>>
-        {
-            Data = workflows,
-            Success = true
-        });
-    }
+    public async Task<IActionResult> GetByProjectId(int projectId) => await _projectWorkflowService.GetByProjectIdAsync(projectId);
+
+    
 
     [HttpPost("project/{projectId}/bulk")]
     public async Task<IActionResult> SaveProjectWorkflows(int projectId, [FromBody] SaveProjectWorkflowsRequest request)

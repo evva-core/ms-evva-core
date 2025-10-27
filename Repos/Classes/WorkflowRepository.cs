@@ -60,8 +60,12 @@ public class WorkflowRepository : GenericRepository<Workflow>, IWorkflowReposito
 
     public async Task<IEnumerable<Workflow>> GetAvailableWorkflowsAsync()
     {
-        var sql = @"
-            SELECT w.* FROM workflows w
+        var sql = @"SELECT w.name,
+	w.command,
+	w.description,
+	w.is_json_required as IsJsonRequired,
+	w.supported_os,
+	w.json_data as JsonData FROM workflows w
             WHERE w.id NOT IN (
                 SELECT DISTINCT workflow_id FROM project_workflow
             )

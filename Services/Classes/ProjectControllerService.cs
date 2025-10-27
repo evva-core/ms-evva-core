@@ -64,7 +64,7 @@ public class ProjectControllerService : GenericControllerService<Project>, IProj
             {
                 return new NotFoundObjectResult($"Project with ID {id} not found");
             }
-            return new OkObjectResult(new { success = true, data = project });
+            return Ok(project);
         }
         catch (Exception ex)
         {
