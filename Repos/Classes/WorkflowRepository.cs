@@ -60,7 +60,9 @@ public class WorkflowRepository : GenericRepository<Workflow>, IWorkflowReposito
 
     public async Task<IEnumerable<Workflow>> GetAvailableWorkflowsAsync()
     {
-        var sql = @"SELECT w.name,
+        var sql = @"
+    SELECT w.name,
+    w.id,
 	w.command,
 	w.description,
 	w.is_json_required as IsJsonRequired,
